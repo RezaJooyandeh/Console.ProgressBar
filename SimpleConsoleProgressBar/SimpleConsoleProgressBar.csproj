@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>netstandard1.3</TargetFramework>
+		<Nullable>enable</Nullable>
+		<LangVersion>latest</LangVersion>
+		<PackageTags>progress,progressbar,console,shell,terminal,text,ascii,character</PackageTags>
+		<PackageDescription>Supper simple, but flexible progressbar for console, shell, and terminal apps.</PackageDescription>
+		<Product>Simple Console ProgressBar</Product>
+		<Authors>Reza Jooyandeh</Authors>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<RepositoryUrl>https://github.com/Reza1024/SimpleConsoleProgressBar</RepositoryUrl>
+	</PropertyGroup>
+</Project>
