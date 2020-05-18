@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>netstandard1.3</TargetFramework>
+		<Nullable>enable</Nullable>
+		<LangVersion>latest</LangVersion>
+		<Product>ProgtextBar</Product>
+		<Title>ProgtextBar</Title>
+		<PackageDescription>Super simple, but flexible text-based progressbar for console, shell, and terminal apps.</PackageDescription>
+		<PackageTags>progress,progressbar,console,shell,terminal,text,ascii,character</PackageTags>
+		<Authors>Reza Jooyandeh</Authors>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<RepositoryUrl>https://github.com/RezaJooyandeh/ProgtextBar</RepositoryUrl>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<AssemblyVersion>0.0.1.0</AssemblyVersion>
+		<FileVersion>0.0.1.0</FileVersion>
+		<PackageVersion>0.0.1-preview.1</PackageVersion>
+	</PropertyGroup>
+</Project>

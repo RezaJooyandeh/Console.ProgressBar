@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace SimpleConsoleProgressBar
+namespace ProgtextBar
 {
 	public class ProgressBar
 	{

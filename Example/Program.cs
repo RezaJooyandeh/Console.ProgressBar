@@ -1,6 +1,6 @@
-﻿using SimpleConsoleProgressBar;
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using ProgtextBar;
 
 namespace Example
 {
