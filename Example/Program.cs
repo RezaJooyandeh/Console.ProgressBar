@@ -66,9 +66,7 @@ namespace Example
 
 			{
 				Console.WriteLine("Custom Format");
-				var progressBar = new ProgressBar(
-					buildPrefix: (value, valuePercentage, minimum, maximum) => "|",
-					buildSuffix: (value, valuePercentage, minimum, maximum) => $"| {valuePercentage}% completed");
+				var progressBar = new ProgressBar(formatter: (progressBar, value, valuePercentage, minimum, maximum) => $"|{progressBar}| {valuePercentage}% completed");
 				for (var i = 0; i <= 89; i++)
 				{
 					await Task.Delay(10);

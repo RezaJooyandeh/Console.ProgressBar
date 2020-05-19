@@ -16,10 +16,9 @@ namespace ConsoleProgressbar
 		private readonly ConsoleColor? _backgroundColor;
 		private Position? _positionToDraw;
 
-		private Formatter BuildPrefix { get; }
-		private Formatter BuildSuffix { get; }
+		private Formatter Format { get; }
 
-		public delegate string Formatter(decimal value, decimal valuePercentage, decimal minimum, decimal maximum);
+		public delegate string Formatter(string progressBar, decimal value, decimal valuePercentage, decimal minimum, decimal maximum);
 
 		public ProgressBar(
 			decimal minimum = 0,
@@ -27,8 +26,7 @@ namespace ConsoleProgressbar
 			int length = 80,
 			string completedSymbol = "█",
 			string incompletedSymbol = "░",
-			Formatter? buildPrefix = null,
-			Formatter? buildSuffix = null,
+			Formatter? formatter = null,
 			ConsoleColor? foregroundColor = null,
 			ConsoleColor? backgroundColor = null,
 			Position? positionToDraw = null)
@@ -41,8 +39,7 @@ namespace ConsoleProgressbar
 			_length = length;
 			_completedSymbol = completedSymbol;
 			_inCompletedSymbol = incompletedSymbol;
-			BuildPrefix = buildPrefix ?? ((_, _, _, _) => "[");
-			BuildSuffix = buildSuffix ?? ((_, valuePercent, _, _) => $"] {valuePercent, 3:N0}%");
+			Format = formatter ?? ((progressBar, _, valuePercent, _, _) => $"[{progressBar}] {valuePercent, 3:N0}%");
 			_positionToDraw = positionToDraw;
 			_foregroundColor = foregroundColor;
 			_backgroundColor = backgroundColor;
@@ -64,15 +61,16 @@ namespace ConsoleProgressbar
 				Value = value.Value;
 			using (new CursorPosition(PositionToDraw()))
 			{
-				var percentage = (_minimum == _maximum) ? 100 : 100 * (_value - _minimum) / (_maximum - _minimum);
-
-				Console.Write(BuildPrefix(_value, percentage, _minimum, _maximum));
+				var formatedText = Format(
+					progressBar: Build(_value, _minimum, _maximum, _length, _completedSymbol, _inCompletedSymbol),
+					value: _value,
+					valuePercentage: (_minimum == _maximum) ? 100 : 100 * (_value - _minimum) / (_maximum - _minimum),
+					minimum: _minimum,
+					maximum: _maximum);
 
 				using (new ConsoleForegroundColor(_foregroundColor))
 				using (new ConsoleBackgroundColor(_backgroundColor))
-					Console.Write(Build(_value, _minimum, _maximum, _length, _completedSymbol, _inCompletedSymbol));
-
-				Console.WriteLine(BuildSuffix(_value, percentage, _minimum, _maximum));
+					Console.WriteLine(formatedText);
 			}
 
 			Position PositionToDraw()

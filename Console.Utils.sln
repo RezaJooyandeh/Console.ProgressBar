@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Example", "Example\Example.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Console.Progressbar", "Console.Progressbar\Console.Progressbar.csproj", "{47171927-F2DC-4604-B365-34928FF4AD87}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Console.UsingColor", "Console.Color\Console.UsingColor.csproj", "{A59F4AFB-0005-4954-A253-9C1905C096B7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Console.UsingColors", "Console.UsingColors\Console.UsingColors.csproj", "{A59F4AFB-0005-4954-A253-9C1905C096B7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5743015F-24DC-49DD-BB8C-631234EF1B23}"
 	ProjectSection(SolutionItems) = preProject
