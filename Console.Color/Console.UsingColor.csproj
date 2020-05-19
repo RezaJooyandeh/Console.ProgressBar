@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFrameworks>netstandard1.3;netstandard2.0</TargetFrameworks>
+		<Nullable>enable</Nullable>
+		<LangVersion>latest</LangVersion>
+		<Product>Console.UsingColors</Product>
+		<Title>Console.UsingColors</Title>
+		<!--<PackageDescription>Super simple, but flexible text-based progressbar for console, shell, and terminal apps.</PackageDescription>
+		<PackageTags>progress,progressbar,console,shell,terminal,text,ascii,character</PackageTags>-->
+		<Authors>Reza Jooyandeh</Authors>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<RepositoryUrl>https://github.com/RezaJooyandeh/Console.Utils.NET</RepositoryUrl>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<AssemblyVersion>0.0.1.0</AssemblyVersion>
+		<FileVersion>0.0.1.0</FileVersion>
+		<PackageVersion>0.0.1-preview.5</PackageVersion>
+	</PropertyGroup>
+</Project>
