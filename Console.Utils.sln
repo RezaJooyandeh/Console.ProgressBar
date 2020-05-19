@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.30011.22
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Example", "Example\Example.csproj", "{1FBFC5FF-028C-402E-B58F-D2074B4A814D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Console.Progressbar", "Console.Progressbar\Console.Progressbar.csproj", "{47171927-F2DC-4604-B365-34928FF4AD87}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Console.Progressbar", "Console.ProgressBar\Console.ProgressBar.csproj", "{47171927-F2DC-4604-B365-34928FF4AD87}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Console.UsingColors", "Console.UsingColors\Console.UsingColors.csproj", "{A59F4AFB-0005-4954-A253-9C1905C096B7}"
 EndProject
