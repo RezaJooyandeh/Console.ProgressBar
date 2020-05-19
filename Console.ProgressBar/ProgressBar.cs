@@ -39,7 +39,7 @@ namespace ConsoleProgressbar
 			_length = length;
 			_completedSymbol = completedSymbol;
 			_inCompletedSymbol = incompletedSymbol;
-			Format = formatter ?? ((progressBar, _, valuePercent, _, _) => $"[{progressBar}] {valuePercent, 3:N0}%");
+			Format = formatter ?? ((progressBar, _, valuePercent, __, ___) => $"[{progressBar}] {valuePercent, 3:N0}%");
 			_positionToDraw = positionToDraw;
 			_foregroundColor = foregroundColor;
 			_backgroundColor = backgroundColor;

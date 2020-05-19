@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Console.Progressbar\Console.Progressbar.csproj" />
+    <ProjectReference Include="..\Console.ProgressBar\Console.ProgressBar.csproj" />
   </ItemGroup>
 
 </Project>
