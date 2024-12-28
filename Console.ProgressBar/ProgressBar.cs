@@ -2,177 +2,176 @@
 using System;
 using System.Text;
 
-namespace ConsoleProgressbar
+namespace ConsoleProgressbar;
+
+public class ProgressBar
 {
-	public class ProgressBar
+	private readonly decimal _minimum;
+	private readonly decimal _maximum = 100;
+	private decimal _value;
+	private readonly int _length = 80;
+	private readonly string _completedSymbol;
+	private readonly string _inCompletedSymbol;
+	private readonly ConsoleColor? _foregroundColor;
+	private readonly ConsoleColor? _backgroundColor;
+	private Position? _positionToDraw;
+
+	private Formatter Format { get; }
+
+	public delegate string Formatter(string progressBar, decimal value, decimal valuePercentage, decimal minimum, decimal maximum);
+
+	public ProgressBar(
+		decimal minimum = 0,
+		decimal maximum = 100,
+		int length = 80,
+		string completedSymbol = "█",
+		string incompletedSymbol = "░",
+		Formatter? formatter = null,
+		ConsoleColor? foregroundColor = null,
+		ConsoleColor? backgroundColor = null,
+		Position? positionToDraw = null)
 	{
-		private readonly decimal _minimum;
-		private readonly decimal _maximum = 100;
-		private decimal _value;
-		private readonly int _length = 80;
-		private readonly string _completedSymbol;
-		private readonly string _inCompletedSymbol;
-		private readonly ConsoleColor? _foregroundColor;
-		private readonly ConsoleColor? _backgroundColor;
-		private Position? _positionToDraw;
+		VerifyMinimumMaximum(minimum, maximum);
+		VerifyLengthValid(length);
 
-		private Formatter Format { get; }
+		_minimum = minimum;
+		_maximum = maximum;
+		_length = length;
+		_completedSymbol = completedSymbol;
+		_inCompletedSymbol = incompletedSymbol;
+		Format = formatter ?? ((progressBar, _, valuePercent, _, _) => $"[{progressBar}] {valuePercent, 3:N0}%");
+		_positionToDraw = positionToDraw;
+		_foregroundColor = foregroundColor;
+		_backgroundColor = backgroundColor;
+	}
 
-		public delegate string Formatter(string progressBar, decimal value, decimal valuePercentage, decimal minimum, decimal maximum);
-
-		public ProgressBar(
-			decimal minimum = 0,
-			decimal maximum = 100,
-			int length = 80,
-			string completedSymbol = "█",
-			string incompletedSymbol = "░",
-			Formatter? formatter = null,
-			ConsoleColor? foregroundColor = null,
-			ConsoleColor? backgroundColor = null,
-			Position? positionToDraw = null)
+	public decimal Value
+	{
+		get => _value;
+		set
 		{
-			VerifyMinimumMaximum(minimum, maximum);
-			VerifyLengthValid(length);
+			VerifyValueInRange(value, _minimum, _maximum);
+			_value = value;
+		}
+	}
 
-			_minimum = minimum;
-			_maximum = maximum;
-			_length = length;
-			_completedSymbol = completedSymbol;
-			_inCompletedSymbol = incompletedSymbol;
-			Format = formatter ?? ((progressBar, _, valuePercent, __, ___) => $"[{progressBar}] {valuePercent, 3:N0}%");
-			_positionToDraw = positionToDraw;
-			_foregroundColor = foregroundColor;
-			_backgroundColor = backgroundColor;
+	public void Draw(decimal ?value)
+	{
+		if (value.HasValue)
+			Value = value.Value;
+		using (new CursorPosition(PositionToDraw()))
+		{
+			var formatedText = Format(
+				progressBar: Build(_value, _minimum, _maximum, _length, _completedSymbol, _inCompletedSymbol),
+				value: _value,
+				valuePercentage: (_minimum == _maximum) ? 100 : 100 * (_value - _minimum) / (_maximum - _minimum),
+				minimum: _minimum,
+				maximum: _maximum);
+
+			using (new ConsoleForegroundColor(_foregroundColor))
+			using (new ConsoleBackgroundColor(_backgroundColor))
+				Console.WriteLine(formatedText);
 		}
 
-		public decimal Value
+		Position PositionToDraw()
 		{
-			get => _value;
-			set
-			{
-				VerifyValueInRange(value, _minimum, _maximum);
-				_value = value;
-			}
+			if (_positionToDraw is null)
+				_positionToDraw = new Position(Console.CursorLeft, Console.CursorTop);
+
+			return _positionToDraw.Value;
+		}
+	}
+
+	public static string Build(decimal value, decimal minimum = 0, decimal maximum = 100, int length = 80, string completedSymbol = "█", string incompletedSymbol = "░")
+	{
+		VerifyMinimumMaximum(minimum, maximum);
+		VerifyValueInRange(value, minimum, maximum);
+		VerifyLengthValid(length);
+
+		if (maximum == minimum)
+			return string.Empty;
+
+		var progress = (int)((value - minimum) * length / (maximum - minimum));
+
+		var sb = new StringBuilder(length);
+
+		for (var i = 0; i < progress; i++)
+			sb.Append(completedSymbol);
+		for (var i = progress; i < length; i++)
+			sb.Append(incompletedSymbol);
+
+		return sb.ToString();
+	}
+
+	private static void VerifyLengthValid(int length)
+	{
+		if (length < 0)
+			throw new ArgumentOutOfRangeException(nameof(length), "Length should not be negative.");
+	}
+
+	private static void VerifyValueInRange(decimal value, decimal minimum, decimal maximum)
+	{
+		if (value > maximum || value < minimum)
+			throw new ArgumentOutOfRangeException(nameof(value), "Value should be between minimum and maximum.");
+	}
+
+	private static void VerifyMinimumMaximum(decimal minimum, decimal maximum)
+	{
+		if (minimum > maximum)
+			throw new ArgumentOutOfRangeException(nameof(minimum), "Minimum value should be smaller than maximum.");
+	}
+
+	private readonly struct CursorPosition : IDisposable
+	{
+		private readonly Position _position;
+
+		public CursorPosition(Position position)
+		{
+			_position = new Position(Console.CursorLeft, Console.CursorTop);
+
+			Console.CursorLeft = position.Left;
+			Console.CursorTop = position.Top;
 		}
 
-		public void Draw(decimal ?value)
+		public void Dispose()
 		{
-			if (value.HasValue)
-				Value = value.Value;
-			using (new CursorPosition(PositionToDraw()))
-			{
-				var formatedText = Format(
-					progressBar: Build(_value, _minimum, _maximum, _length, _completedSymbol, _inCompletedSymbol),
-					value: _value,
-					valuePercentage: (_minimum == _maximum) ? 100 : 100 * (_value - _minimum) / (_maximum - _minimum),
-					minimum: _minimum,
-					maximum: _maximum);
+			Console.CursorLeft = _position.Left;
+			Console.CursorTop = _position.Top;
+		}
+	}
 
-				using (new ConsoleForegroundColor(_foregroundColor))
-				using (new ConsoleBackgroundColor(_backgroundColor))
-					Console.WriteLine(formatedText);
-			}
+	private readonly struct ConsoleColors : IDisposable
+	{
+		private readonly ConsoleColor _foregroundColor;
+		private readonly ConsoleColor _backgroundColor;
 
-			Position PositionToDraw()
-			{
-				if (_positionToDraw is null)
-					_positionToDraw = new Position(Console.CursorLeft, Console.CursorTop);
+		public ConsoleColors(ConsoleColor? foregroundColor, ConsoleColor? backgroundColor)
+		{
+			_foregroundColor = Console.ForegroundColor;
+			_backgroundColor = Console.BackgroundColor;
 
-				return _positionToDraw.Value;
-			}
+			if (foregroundColor != null)
+				Console.ForegroundColor = foregroundColor.Value;
+			if (backgroundColor != null)
+				Console.BackgroundColor = backgroundColor.Value;
 		}
 
-		public static string Build(decimal value, decimal minimum = 0, decimal maximum = 100, int length = 80, string completedSymbol = "█", string incompletedSymbol = "░")
+		public void Dispose()
 		{
-			VerifyMinimumMaximum(minimum, maximum);
-			VerifyValueInRange(value, minimum, maximum);
-			VerifyLengthValid(length);
-
-			if (maximum == minimum)
-				return string.Empty;
-
-			var progress = (int)((value - minimum) * length / (maximum - minimum));
-
-			var sb = new StringBuilder(length);
-
-			for (var i = 0; i < progress; i++)
-				sb.Append(completedSymbol);
-			for (var i = progress; i < length; i++)
-				sb.Append(incompletedSymbol);
-
-			return sb.ToString();
+			Console.ForegroundColor = _foregroundColor;
+			Console.BackgroundColor = _backgroundColor;
 		}
+	}
 
-		private static void VerifyLengthValid(int length)
+	public readonly struct Position
+	{
+		public readonly int Left;
+		public readonly int Top;
+
+		public Position(int left, int top)
 		{
-			if (length < 0)
-				throw new ArgumentOutOfRangeException(nameof(length), "Length should not be negative.");
-		}
-
-		private static void VerifyValueInRange(decimal value, decimal minimum, decimal maximum)
-		{
-			if (value > maximum || value < minimum)
-				throw new ArgumentOutOfRangeException(nameof(value), "Value should be between minimum and maximum.");
-		}
-
-		private static void VerifyMinimumMaximum(decimal minimum, decimal maximum)
-		{
-			if (minimum > maximum)
-				throw new ArgumentOutOfRangeException(nameof(minimum), "Minimum value should be smaller than maximum.");
-		}
-
-		private readonly struct CursorPosition : IDisposable
-		{
-			private readonly Position _position;
-
-			public CursorPosition(Position position)
-			{
-				_position = new Position(Console.CursorLeft, Console.CursorTop);
-
-				Console.CursorLeft = position.Left;
-				Console.CursorTop = position.Top;
-			}
-
-			public void Dispose()
-			{
-				Console.CursorLeft = _position.Left;
-				Console.CursorTop = _position.Top;
-			}
-		}
-
-		private readonly struct ConsoleColors : IDisposable
-		{
-			private readonly ConsoleColor _foregroundColor;
-			private readonly ConsoleColor _backgroundColor;
-
-			public ConsoleColors(ConsoleColor? foregroundColor, ConsoleColor? backgroundColor)
-			{
-				_foregroundColor = Console.ForegroundColor;
-				_backgroundColor = Console.BackgroundColor;
-
-				if (foregroundColor != null)
-					Console.ForegroundColor = foregroundColor.Value;
-				if (backgroundColor != null)
-					Console.BackgroundColor = backgroundColor.Value;
-			}
-
-			public void Dispose()
-			{
-				Console.ForegroundColor = _foregroundColor;
-				Console.BackgroundColor = _backgroundColor;
-			}
-		}
-
-		public readonly struct Position
-		{
-			public readonly int Left;
-			public readonly int Top;
-
-			public Position(int left, int top)
-			{
-				Left = left;
-				Top = top;
-			}
+			Left = left;
+			Top = top;
 		}
 	}
 }
